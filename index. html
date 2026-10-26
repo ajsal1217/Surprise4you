@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Surprise4You 🎁</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:white;
+background:linear-gradient(135deg,#17072f,#51218b,#e44caa);
+min-height:100vh;text-align:center}
+header{padding:30px 15px}
+h1{font-size:38px;margin:10px}
+p{line-height:1.6}
+.card{background:#ffffff18;border:1px solid #ffffff40;
+backdrop-filter:blur(15px);border-radius:25px;
+padding:25px;margin:20px auto;max-width:450px;
+box-shadow:0 15px 45px #0004}
+input,textarea{width:100%;padding:14px;margin:9px 0;
+border:1px solid #ffffff50;border-radius:12px;
+background:#ffffff20;color:white;font-size:16px}
+input::placeholder,textarea::placeholder{color:#eee}
+button{background:linear-gradient(90deg,#ff69c5,#a56bff);
+color:white;border:0;border-radius:30px;padding:15px 25px;
+font-size:17px;font-weight:bold;cursor:pointer;margin:10px}
+.gift{font-size:85px;cursor:pointer;animation:bounce 2s infinite}
+@keyframes bounce{50%{transform:translateY(-15px)}}
+.hidden{display:none}
+#photo{max-width:100%;max-height:300px;border-radius:18px}
+#share{overflow-wrap:anywhere;color:#ffc9f1}
+footer{padding:25px;color:#ddd}
+</style>
+</head>
+<body>
+<header>
+<h1>🎁 Surprise4You</h1>
+<p>Make Every Birthday Magical ✨</p>
+</header>
+
+<div id="creator" class="card">
+<h2>Create Birthday Surprise 🎂</h2>
+<input id="name" placeholder="Birthday person's name">
+<textarea id="message" placeholder="Your special birthday wish"></textarea>
+<input id="imageUrl" placeholder="Public photo URL (optional)">
+<button onclick="createWish()">Create Surprise 💜</button>
+</div>
+
+<div id="surprise" class="card hidden">
+<div id="gift" class="gift" onclick="openGift()">🎁</div>
+<h2 id="hint">Tap the gift to open!</h2>
+<div id="content" class="hidden">
+<h1>🎉 Happy Birthday!</h1>
+<h2 id="person"></h2>
+<img id="photo" class="hidden" alt="Birthday photo">
+<p id="wish"></p>
+<div style="font-size:65px">🎂🎈💖</div>
+<button onclick="celebrate()">Celebrate 🎉</button>
+</div>
+</div>
+
+<div id="sharing" class="card hidden">
+<h3>Your Surprise Link 🔗</h3>
+<p id="share"></p>
+<button onclick="copyLink()">Copy Link 📋</button>
+<button onclick="shareWhatsApp()">WhatsApp 💚</button>
+</div>
+
+<footer>Made with ❤️ by Surprise4You</footer>
+
+<script>
+const params=new URLSearchParams(location.search);
+const data=params.get("d");
+let currentLink="";
+
+function createWish(){
+const name=document.getElementById("name").value.trim();
+const message=document.getElementById("message").value.trim();
+const image=document.getElementById("imageUrl").value.trim();
+if(!name){alert("Please enter a name");return;}
+const payload=JSON.stringify({name,message,image});
+const encoded=btoa(unescape(encodeURIComponent(payload)));
+currentLink=location.origin+location.pathname+"?d="+
+encodeURIComponent(encoded);
+document.getElementById("share").textContent=currentLink;
+document.getElementById("sharing").classList.remove("hidden");
+document.getElementById("creator").classList.add("hidden");
+showSurprise({name,message,image});
+}
+function showSurprise(info){
+document.getElementById("surprise").classList.remove("hidden");
+document.getElementById("person").textContent=info.name;
+document.getElementById("wish").textContent=info.message;
+if(info.image && /^https:\/\//i.test(info.image)){
+const photo=document.getElementById("photo");
+photo.src=info.image;
+photo.classList.remove("hidden");
+}
+}
+function openGift(){
+document.getElementById("gift").classList.add("hidden");
+document.getElementById("hint").classList.add("hidden");
+document.getElementById("content").classList.remove("hidden");
+celebrate();
+}
+function celebrate(){
+const icons=["🎉","💜","🎈","✨","💖"];
+for(let i=0;i<35;i++){
+const e=document.createElement("span");
+e.textContent=icons[Math.floor(Math.random()*icons.length)];
+e.style.cssText="position:fixed;top:-30px;left:"+
+Math.random()*100+"%;font-size:26px;pointer-events:none;"+
+"z-index:99;transition:transform 3s linear,opacity 3s";
+document.body.appendChild(e);
+setTimeout(()=>{
+e.style.transform="translateY(110vh) rotate(540deg)";
+e.style.opacity="0";
+},30);
+setTimeout(()=>e.remove(),3200);
+}
+}
+function copyLink(){
+navigator.clipboard.writeText(currentLink)
+.then(()=>alert("Link copied!"))
+.catch(()=>prompt("Copy this link:",currentLink));
+}
+function shareWhatsApp(){
+window.open("https://wa.me/?text="+
+encodeURIComponent("🎁 A birthday surprise for you! "+currentLink),
+"_blank");
+}
+if(data){
+try{
+const info=JSON.parse(decodeURIComponent(escape(atob(data))));
+document.getElementById("creator").classList.add("hidden");
+showSurprise(info);
+}catch(e){alert("Invalid surprise link");}
+}
+</script>
+</body>
+</html>
