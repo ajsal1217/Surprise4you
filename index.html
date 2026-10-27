@@ -6,135 +6,266 @@
 <title>Surprise4You 🎁</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;color:white;
-background:linear-gradient(135deg,#17072f,#51218b,#e44caa);
-min-height:100vh;text-align:center}
-header{padding:30px 15px}
-h1{font-size:38px;margin:10px}
-p{line-height:1.6}
-.card{background:#ffffff18;border:1px solid #ffffff40;
-backdrop-filter:blur(15px);border-radius:25px;
-padding:25px;margin:20px auto;max-width:450px;
-box-shadow:0 15px 45px #0004}
-input,textarea{width:100%;padding:14px;margin:9px 0;
-border:1px solid #ffffff50;border-radius:12px;
-background:#ffffff20;color:white;font-size:16px}
-input::placeholder,textarea::placeholder{color:#eee}
-button{background:linear-gradient(90deg,#ff69c5,#a56bff);
-color:white;border:0;border-radius:30px;padding:15px 25px;
-font-size:17px;font-weight:bold;cursor:pointer;margin:10px}
-.gift{font-size:85px;cursor:pointer;animation:bounce 2s infinite}
-@keyframes bounce{50%{transform:translateY(-15px)}}
+body{margin:0;font-family:Arial,sans-serif;color:white;text-align:center;background:linear-gradient(140deg,#210b48,#822d91,#e14c98);min-height:100vh}
+main{max-width:600px;margin:auto;padding:20px}
+h1{font-size:38px}
+.card{background:#ffffff20;border:1px solid #ffffff55;border-radius:24px;padding:22px;margin:20px 0;box-shadow:0 12px 35px #0004}
+input,textarea{width:100%;padding:13px;margin:8px 0 15px;border:0;border-radius:12px;font-size:16px}
+textarea{height:100px}
+label{display:block;text-align:left;font-weight:bold}
+button{border:0;border-radius:30px;padding:14px 20px;margin:7px;background:linear-gradient(90deg,#ff65b5,#9e6cff);color:white;font-weight:bold;font-size:15px}
 .hidden{display:none}
-#photo{max-width:100%;max-height:300px;border-radius:18px}
-#share{overflow-wrap:anywhere;color:#ffc9f1}
-footer{padding:25px;color:#ddd}
+#pic{width:190px;height:190px;object-fit:cover;border-radius:22px;border:4px solid pink}
+#gift{font-size:85px;cursor:pointer;animation:bounce 1.5s infinite alternate}
+#cake{font-size:90px;animation:bounce 2s infinite alternate}
+@keyframes bounce{to{transform:translateY(-15px)}}
+.letter{white-space:pre-wrap;overflow-wrap:anywhere;background:#ffffff25;border-radius:16px;padding:18px}
+.note{font-size:13px;line-height:1.6;color:#ffe5fa}
+#stage{overflow:hidden;position:relative}
 </style>
 </head>
 <body>
-<header>
-<h1>🎁 Surprise4You</h1>
-<p>Make Every Birthday Magical ✨</p>
-</header>
+<main>
+<h1>🎁 Surprise4You 💜</h1>
+<p>Create magical birthday surprises for free!</p>
 
-<div id="creator" class="card">
-<h2>Create Birthday Surprise 🎂</h2>
-<input id="name" placeholder="Birthday person's name">
-<textarea id="message" placeholder="Your special birthday wish"></textarea>
-<input id="imageUrl" placeholder="Public photo URL (optional)">
-<button onclick="createWish()">Create Surprise 💜</button>
+<section id="maker" class="card">
+<h2>🎂 Create a Surprise</h2>
+<label>Birthday Person's Name</label>
+<input id="name" maxlength="60" placeholder="Enter name">
+<label>Birthday Wish</label>
+<textarea id="wish" maxlength="400" placeholder="Happy Birthday!"></textarea>
+<label>Love Letter 💌</label>
+<textarea id="letter" maxlength="1000" placeholder="Write something special..."></textarea>
+<label>Choose One Photo 📸</label>
+<input id="upload" type="file" accept="image/jpeg,image/png,image/webp">
+<p class="note">Gallery photo works on this phone. For the recipient to see a photo through the link, use a public HTTPS photo URL below.</p>
+<label>Public Photo URL (optional)</label>
+<input id="photoUrl" type="url" placeholder="https://example.com/photo.jpg">
+<button onclick="create()">✨ Create Surprise</button>
+</section>
+
+<section id="result" class="card hidden">
+<div id="stage">
+<h2 id="greeting"></h2>
+<img id="pic" class="hidden" alt="Birthday photo">
+<div id="cake">🎂</div>
+<p id="showWish"></p>
+<div id="gift" onclick="openGift()">🎁</div>
+<p>Tap the gift!</p>
+<div id="love" class="hidden">
+<h3>💌 A Letter For You</h3>
+<p id="showLetter" class="letter"></p>
 </div>
-
-<div id="surprise" class="card hidden">
-<div id="gift" class="gift" onclick="openGift()">🎁</div>
-<h2 id="hint">Tap the gift to open!</h2>
-<div id="content" class="hidden">
-<h1>🎉 Happy Birthday!</h1>
-<h2 id="person"></h2>
-<img id="photo" class="hidden" alt="Birthday photo">
-<p id="wish"></p>
-<div style="font-size:65px">🎂🎈💖</div>
-<button onclick="celebrate()">Celebrate 🎉</button>
 </div>
+<button onclick="musicToggle()" id="musicBtn">🎵 Play Music</button>
+<button onclick="downloadVideo()" id="videoBtn">⬇️ Download 30s Video</button>
+<p id="status" class="note"></p>
+<div id="shareArea" class="hidden">
+<input id="shareLink" readonly>
+<button onclick="copyLink()">📋 Copy Link</button>
+<button onclick="shareWhatsApp()">💚 WhatsApp</button>
 </div>
-
-<div id="sharing" class="card hidden">
-<h3>Your Surprise Link 🔗</h3>
-<p id="share"></p>
-<button onclick="copyLink()">Copy Link 📋</button>
-<button onclick="shareWhatsApp()">WhatsApp 💚</button>
-</div>
-
-<footer>Made with ❤️ by Surprise4You</footer>
-
+<button onclick="location.href=location.pathname">✨ Create Another</button>
+</section>
+<p class="note">🔐 No login or payment. Anyone with the link can view the shared message and public photo. Video download works best in Android Chrome and saves as WebM.</p>
+</main>
 <script>
-const params=new URLSearchParams(location.search);
-const data=params.get("d");
-let currentLink="";
+const el=id=>document.getElementById(id);
+let data={},localPhoto="",audio=null,timer=null;
+const notes=[261.63,261.63,293.66,261.63,349.23,329.63,261.63,261.63,293.66,261.63,392,349.23,261.63,261.63,523.25,440,349.23,329.63,293.66,466.16,466.16,440,349.23,392,349.23];
 
-function createWish(){
-const name=document.getElementById("name").value.trim();
-const message=document.getElementById("message").value.trim();
-const image=document.getElementById("imageUrl").value.trim();
-if(!name){alert("Please enter a name");return;}
-const payload=JSON.stringify({name,message,image});
-const encoded=btoa(unescape(encodeURIComponent(payload)));
-currentLink=location.origin+location.pathname+"?d="+
-encodeURIComponent(encoded);
-document.getElementById("share").textContent=currentLink;
-document.getElementById("sharing").classList.remove("hidden");
-document.getElementById("creator").classList.add("hidden");
-showSurprise({name,message,image});
+function validURL(s){
+try{
+const u=new URL(s);
+return u.protocol==="https:"&&!u.username&&!u.password&&s.length<1500?u.href:"";
+}catch{return "";}
 }
-function showSurprise(info){
-document.getElementById("surprise").classList.remove("hidden");
-document.getElementById("person").textContent=info.name;
-document.getElementById("wish").textContent=info.message;
-if(info.image && /^https:\/\//i.test(info.image)){
-const photo=document.getElementById("photo");
-photo.src=info.image;
-photo.classList.remove("hidden");
+function encode(o){
+return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function decode(s){
+return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))));
+}
+el("upload").onchange=e=>{
+const f=e.target.files[0];
+if(localPhoto)URL.revokeObjectURL(localPhoto);
+localPhoto="";
+if(!f)return;
+if(!["image/jpeg","image/png","image/webp"].includes(f.type)||f.size>5000000){
+alert("Choose a JPG, PNG or WebP photo under 5 MB.");
+return;
+}
+localPhoto=URL.createObjectURL(f);
+};
+function create(){
+const n=el("name").value.trim();
+if(!n){alert("Enter a name");return;}
+const raw=el("photoUrl").value.trim();
+const p=raw?validURL(raw):"";
+if(raw&&!p){alert("Enter a valid HTTPS photo URL");return;}
+data={n:n.slice(0,60),w:el("wish").value.slice(0,400),l:el("letter").value.slice(0,1000),p};
+show(data,true);
+}
+function show(d,created){
+data=d;
+el("maker").classList.add("hidden");
+el("result").classList.remove("hidden");
+el("greeting").textContent="Happy Birthday, "+d.n+"! 🎉";
+el("showWish").textContent=d.w||"Wishing you happiness and love! 💖";
+el("showLetter").textContent=d.l||"You are very special! ❤️";
+el("love").classList.add("hidden");
+el("gift").textContent="🎁";
+const img=el("pic");
+img.classList.add("hidden");
+img.removeAttribute("src");
+const src=d.p||(created?localPhoto:"");
+if(src){
+img.onload=()=>img.classList.remove("hidden");
+img.onerror=()=>img.classList.add("hidden");
+img.src=src;
+}
+if(created){
+const u=new URL(location.href);
+u.search="?s="+encode(d);
+el("shareLink").value=u.href;
+el("shareArea").classList.remove("hidden");
+el("status").textContent=localPhoto&&!d.p?"Gallery photo will not appear in the shared link. Add a public photo URL to share it.":"";
 }
 }
 function openGift(){
-document.getElementById("gift").classList.add("hidden");
-document.getElementById("hint").classList.add("hidden");
-document.getElementById("content").classList.remove("hidden");
-celebrate();
+el("gift").textContent="💝";
+el("love").classList.remove("hidden");
 }
-function celebrate(){
-const icons=["🎉","💜","🎈","✨","💖"];
-for(let i=0;i<35;i++){
-const e=document.createElement("span");
-e.textContent=icons[Math.floor(Math.random()*icons.length)];
-e.style.cssText="position:fixed;top:-30px;left:"+
-Math.random()*100+"%;font-size:26px;pointer-events:none;"+
-"z-index:99;transition:transform 3s linear,opacity 3s";
-document.body.appendChild(e);
-setTimeout(()=>{
-e.style.transform="translateY(110vh) rotate(540deg)";
-e.style.opacity="0";
-},30);
-setTimeout(()=>e.remove(),3200);
+function tone(ctx,dest,f,t,dur=.25){
+const o=ctx.createOscillator(),g=ctx.createGain();
+o.type="sine";o.frequency.value=f;
+g.gain.setValueAtTime(.0001,t);
+g.gain.exponentialRampToValueAtTime(.12,t+.02);
+g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+o.connect(g);g.connect(dest);
+o.start(t);o.stop(t+dur+.02);
 }
+function musicToggle(){
+if(timer){
+clearInterval(timer);timer=null;
+el("musicBtn").textContent="🎵 Play Music";
+return;
+}
+audio=audio||new (window.AudioContext||window.webkitAudioContext)();
+audio.resume();
+let i=0;
+const play=()=>tone(audio,audio.destination,notes[i++%notes.length],audio.currentTime,.3);
+play();timer=setInterval(play,390);
+el("musicBtn").textContent="⏸️ Pause Music";
 }
 function copyLink(){
-navigator.clipboard.writeText(currentLink)
-.then(()=>alert("Link copied!"))
-.catch(()=>prompt("Copy this link:",currentLink));
+const x=el("shareLink");
+navigator.clipboard.writeText(x.value).then(()=>alert("Link copied!")).catch(()=>{x.select();alert("Copy the selected link");});
 }
 function shareWhatsApp(){
-window.open("https://wa.me/?text="+
-encodeURIComponent("🎁 A birthday surprise for you! "+currentLink),
-"_blank");
+window.open("https://wa.me/?text="+encodeURIComponent("🎁 A birthday surprise for you! "+el("shareLink").value),"_blank","noopener,noreferrer");
 }
-if(data){
+function wrap(ctx,text,y,size,maxLines){
+ctx.font=size+"px Arial";
+const words=String(text).split(/\s+/);
+let line="",count=0;
+for(const word of words){
+const next=line?line+" "+word:word;
+if(ctx.measureText(next).width>450&&line){
+ctx.fillText(line,270,y+count*(size+10));
+count++;line=word;
+if(count>=maxLines)return;
+}else line=next;
+}
+ctx.fillText(line,270,y+count*(size+10));
+}
+async function downloadVideo(){
+if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){
+el("status").textContent="Video export unsupported. Try Android Chrome.";
+return;
+}
+const btn=el("videoBtn");btn.disabled=true;
+el("status").textContent="Recording 30 seconds. Keep page open...";
+let stream,ac,drawTimer,soundTimer,stopTimer;
 try{
-const info=JSON.parse(decodeURIComponent(escape(atob(data))));
-document.getElementById("creator").classList.add("hidden");
-showSurprise(info);
-}catch(e){alert("Invalid surprise link");}
+const c=document.createElement("canvas");
+c.width=540;c.height=960;
+const g=c.getContext("2d");
+stream=c.captureStream(24);
+ac=new (window.AudioContext||window.webkitAudioContext)();
+await ac.resume();
+const dest=ac.createMediaStreamDestination();
+dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+const mime=["video/webm;codecs=vp8,opus","video/webm"].find(x=>MediaRecorder.isTypeSupported(x));
+if(!mime)throw Error("WebM unsupported");
+const rec=new MediaRecorder(stream,{mimeType:mime});
+const chunks=[];
+rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+rec.onstop=()=>{
+clearInterval(drawTimer);clearInterval(soundTimer);
+stream.getTracks().forEach(t=>t.stop());ac.close();
+const blob=new Blob(chunks,{type:mime});
+if(blob.size){
+const url=URL.createObjectURL(blob),a=document.createElement("a");
+a.href=url;a.download="Surprise4You-30seconds.webm";
+a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+el("status").textContent="Video ready! 🎉";
+}else el("status").textContent="Recording failed. Try Chrome.";
+btn.disabled=false;
+};
+const img=el("pic");
+const start=performance.now();
+function draw(){
+const s=(performance.now()-start)/1000;
+const grad=g.createLinearGradient(0,0,540,960);
+grad.addColorStop(0,"#502081");grad.addColorStop(.6,"#bc368d");grad.addColorStop(1,"#230e46");
+g.fillStyle=grad;g.fillRect(0,0,540,960);
+g.fillStyle="white";g.textAlign="center";
+g.font="bold 35px Arial";
+wrap(g,"Happy Birthday "+data.n+"!",110,35,2);
+if(img.complete&&img.naturalWidth){
+try{
+const ratio=Math.max(300/img.naturalWidth,300/img.naturalHeight);
+const w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
+g.drawImage(img,270-w/2,190+(300-h)/2,w,h);
+}catch{}
+}else{
+g.font="100px Arial";g.fillText("🎂",270,340);
 }
+g.font="75px Arial";
+g.fillText(s<10?"🎁":s<20?"🎂":"💝",270,590);
+g.font="25px Arial";
+wrap(g,s<17?(data.w||"Have a wonderful birthday!"):(data.l||data.w||"You are special!").slice(0,180),680,25,5);
+g.font="24px Arial";g.fillText("💜 Surprise4You 💜",270,920);
+}
+draw();drawTimer=setInterval(draw,42);
+let i=0;
+function play(){
+const now=ac.currentTime+.05;
+for(let k=0;k<5;k++)tone(ac,dest,notes[(i+k)%notes.length],now+k*.39,.3);
+i+=5;
+}
+play();soundTimer=setInterval(play,1950);
+rec.start(250);
+stopTimer=setTimeout(()=>{if(rec.state!=="inactive")rec.stop()},30000);
+}catch(e){
+clearInterval(drawTimer);clearInterval(soundTimer);clearTimeout(stopTimer);
+if(stream)stream.getTracks().forEach(t=>t.stop());
+if(ac)ac.close();
+el("status").textContent="Video error: "+e.message;
+btn.disabled=false;
+}
+}
+try{
+const s=new URL(location.href).searchParams.get("s");
+if(s&&s.length<6000){
+const d=decode(s);
+if(typeof d.n==="string"&&d.n.length<=60){
+show({n:d.n,w:String(d.w||"").slice(0,400),l:String(d.l||"").slice(0,1000),p:validURL(d.p||"")},false);
+}
+}
+}catch{}
 </script>
 </body>
 </html>
